@@ -95,10 +95,7 @@ public class CollisionProcessor
         	Vector2d rq   = subVec(r.x, q.x);
         	Vector2d rq_v = subVec(r.v, q.v);
         	
-        	//System.out.println("pq = (" + pq.x + ", " + pq.y + ")");
-        	//System.out.println("pq_v = (" + pq_v.x + ", " + pq_v.y + ")");
-        	//System.out.println("rq = (" + rq.x + ", " + rq.y + ")");
-        	//System.out.println("rq_v = (" + rq_v.x + ", " + rq_v.y + ")");
+ 
        	
         	double a = cp(rq, pq);
         	double b = cp(rq_v, pq) + cp(rq, pq_v);

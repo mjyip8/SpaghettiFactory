@@ -187,7 +187,7 @@ public class ParticleSystem implements Serializable
                 force.applyForce();
 
              // GRAVITY:
-             for(Particle p : P)   p.f.y -= p.m * .01f;
+             for(Particle p : P)   p.f.y -= p.m * 10.f;
 
             // ADD SOME MASS-PROPORTIONAL DAMPING (DEFAULT IS ZERO)
             for(Particle p : P) 
