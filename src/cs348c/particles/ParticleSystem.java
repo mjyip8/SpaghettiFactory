@@ -187,7 +187,7 @@ public class ParticleSystem implements Serializable
                 force.applyForce();
 
              // GRAVITY:
-             for(Particle p : P)   p.f.y -= p.m * 10.f;
+             for(Particle p : P)   p.f.y -= p.m * .1f;
 
             // ADD SOME MASS-PROPORTIONAL DAMPING (DEFAULT IS ZERO)
             for(Particle p : P) 
@@ -232,9 +232,10 @@ public class ParticleSystem implements Serializable
         	for(Particle p : P) {
         		for (Force f: F) {
         			if (f instanceof SpringForce2Particle) { //check if is spaghetti edge
-        				PointEdgeCollision collision = cs348c.particles.CollisionProcessor.testPointEdgeCollision(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2, dt, true);
-        				// test for collision here
-        				// call resolveCollision
+        				PointEdgeCollision collision = cs348c.particles.CollisionProcessor.testPointEdgeCollision(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2, dt, false);
+        				if (collision != null) {
+        					collision.resolveCollision();
+        				}
         			}
         		}
         	}

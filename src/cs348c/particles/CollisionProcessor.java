@@ -41,11 +41,24 @@ public class CollisionProcessor
         public double t;
         public double dt;
         public double alpha;
-
+        
         /** Applies momentum-conserving impulses in an attempt to resolve the collision. */
         void resolveCollision()
         {
-            /// COMPUTE/APPLY IMPULSE HERE...
+        	System.out.println("Entering resolveCollision");
+        	Vector2d c_p = new Vector2d(P.x.x + P.v.x * t, P.x.y + P.v.y * t);
+        	Vector2d rq = subVec(R.x, Q.x);
+        	Vector2d n = new Vector2d(rq.y /rq.length(), -rq.x / rq.length());
+        	
+        	double m = (1/P.m) + (Math.pow(1 - alpha, 2) / Q.m) + (Math.pow(alpha, 2) / R.m);
+        	double epsilon = .1;
+        	Vector2d n_v_old = scalMult(n, -P.v.dot(n));
+        	Vector2d gamma = scalMult(n_v_old, (1 + epsilon) * m);
+
+        	P.v = new Vector2d(P.v.x +               (gamma.x * n.x / P.m), P.v.y +               (gamma.y * n.y / P.m));
+        	Q.v = new Vector2d(Q.v.x + ((1 - alpha) * gamma.x * n.x / Q.m), Q.v.y + ((1 - alpha) * gamma.y * n.y / Q.m));
+        	R.v = new Vector2d(R.v.x +      (alpha  * gamma.x * n.x / R.m), R.v.y +      (alpha  * gamma.y * n.y / R.m));
+        	System.out.println("Leaving resolveCollision");
         }
 
         /** 
@@ -57,6 +70,18 @@ public class CollisionProcessor
         }
     }
     
+    private static Vector2d subVec(Point2d a, Point2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d scalMult(Vector2d v, double n) {
+    	return new Vector2d(v.x * n, v.y * n);
+    }
+    
+    private static Vector2d subVec(Vector2d a, Vector2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
     private static double cp(Vector2d v1, Vector2d v2) 
     {
         double cp = (v1.x * v2.y) - (v1.y * v2.x);
@@ -66,14 +91,6 @@ public class CollisionProcessor
     
     public static double getAlpha(Vector2d pq, Vector2d rq) {
     	return (rq.x * pq.x + rq.y * pq.y)/rq.lengthSquared();
-    }
-    
-    private static Vector2d subVec(Point2d a, Point2d b) {
-    	return new Vector2d(a.x - b.x, a.y - b.y);
-    }
-    
-    private static Vector2d subVec(Vector2d a, Vector2d b) {
-    	return new Vector2d(a.x - b.x, a.y - b.y);
     }
     
     /**
@@ -101,12 +118,7 @@ public class CollisionProcessor
         	double b = cp(rq_v, pq) + cp(rq, pq_v);
         	double c = cp(rq_v, pq_v);
         	
-        	//if (debug)
-        		//System.out.println("a = " + a + ", b = " + b + ", c = " + c);
-        	
         	if ((a == 0 && b == 0) || ((b * b) - (4 * a * c) < 0)) {
-            	//if (debug)
-            		//System.out.println("returning null");
         		return null;
         	} else if (b * b - 4 * a * c >= 0 && a != 0 && b != 0) {
         		double z = -.5 * (b + Math.signum(b) * Math.sqrt(b * b - 4 * a * c));
@@ -114,11 +126,12 @@ public class CollisionProcessor
         		double t2 = Math.max(z/a, c/z);
         		t1 = (t1 == -0.0)? 0.0 : t1;
 
-            	//if (debug)
-            		//System.out.println("t1 = " + t1 + ", t2 = " + t2);
+            	if (debug)
+            		System.out.println("t1 = " + t1 + ", t2 = " + t2);
 
         		if (t1 > 0 && t1 <= dt) {
-		    		//System.out.println("***********t1 possible " + t1);
+        			if (debug)
+        				System.out.println("***********T1 possible " + t1);
 
         			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t1, p.x.getY() + p.v.y * t1);
         			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
@@ -133,7 +146,7 @@ public class CollisionProcessor
         				return new PointEdgeCollision(p, q, r, t1, dt, alpha);
         			}
         		} else if (t2 > 0 && t2 <= dt) {
-		    		System.out.println("***********t2 possible " + t2);
+		    		System.out.println("***********T2 possible " + t2);
 
         			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t2, p.x.getY() + p.v.y * t2);
         			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
@@ -177,7 +190,8 @@ public class CollisionProcessor
                 		System.out.println("alpha = " + alpha);
         			
         			if (alpha <= 1 && alpha >= 0) {
-        		    	System.out.println("***********Collision at " + t);
+        				if (debug)
+        					System.out.println("***********Collision at " + t);
         				return new PointEdgeCollision(p, q, r, t, dt, alpha);
         			}
         		} 
