@@ -13,7 +13,7 @@ import com.jogamp.opengl.*;
 public class Particle
 {
     /** Radius of particle's circle graphic. */
-    private static final double PARTICLE_RADIUS = 0.004;/// (NOT USED)
+    private static final double PARTICLE_RADIUS = 0.1;/// (NOT USED)
 
     /** Display list index. */
     private static int PARTICLE_DISPLAY_LIST = -1;

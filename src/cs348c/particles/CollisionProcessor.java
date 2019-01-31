@@ -59,12 +59,21 @@ public class CollisionProcessor
     
     private static double cp(Vector2d v1, Vector2d v2) 
     {
-        return (v1.x * v2.y) - (v1.y * v2.x);
+        double cp = (v1.x * v2.y) - (v1.y * v2.x);
+        return (cp == -0.0)? 0.0 : cp;
     }
     
     
     public static double getAlpha(Vector2d pq, Vector2d rq) {
     	return (rq.x * pq.x + rq.y * pq.y)/rq.lengthSquared();
+    }
+    
+    private static Vector2d subVec(Point2d a, Point2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d subVec(Vector2d a, Vector2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
     }
     
     /**
@@ -78,50 +87,104 @@ public class CollisionProcessor
                                                             Particle q, Particle r, 
                                                             double   dt, boolean debug)
     {
-    	if (debug)
-    		System.out.println("Entering testPointEdge");
-        if(p==q || p==r) 
+        if(p == q || p==r) 
             return null;
         else {
-        	Vector2d pq = new Vector2d((p.x.getX() - q.x.getX()), p.x.getY() - q.x.getY());
-        	Vector2d pq_v = new Vector2d((p.v.x - q.v.x), p.v.y - q.v.y);
-        	Vector2d rq = new Vector2d(r.x.getX() - q.x.getX(), r.x.getY() - q.x.getY());
-        	Vector2d rq_v = new Vector2d((r.v.x - q.v.x), r.v.y - q.v.y);
-
+        	Vector2d pq   = subVec(p.x, q.x);
+        	Vector2d pq_v = subVec(p.v, q.v);
+        	Vector2d rq   = subVec(r.x, q.x);
+        	Vector2d rq_v = subVec(r.v, q.v);
         	
+        	//System.out.println("pq = (" + pq.x + ", " + pq.y + ")");
+        	//System.out.println("pq_v = (" + pq_v.x + ", " + pq_v.y + ")");
+        	//System.out.println("rq = (" + rq.x + ", " + rq.y + ")");
+        	//System.out.println("rq_v = (" + rq_v.x + ", " + rq_v.y + ")");
+       	
         	double a = cp(rq, pq);
         	double b = cp(rq_v, pq) + cp(rq, pq_v);
         	double c = cp(rq_v, pq_v);
         	
-        	if ((a == 0 && b == 0) || (b * b - 4 * a * c < 0)) {
+        	//if (debug)
+        		//System.out.println("a = " + a + ", b = " + b + ", c = " + c);
+        	
+        	if ((a == 0 && b == 0) || ((b * b) - (4 * a * c) < 0)) {
+            	//if (debug)
+            		//System.out.println("returning null");
         		return null;
-        	} else if (b * b - 4 * a * c > 0) {
+        	} else if (b * b - 4 * a * c >= 0 && a != 0 && b != 0) {
         		double z = -.5 * (b + Math.signum(b) * Math.sqrt(b * b - 4 * a * c));
         		double t1 = Math.min(z/a, c/z);
         		double t2 = Math.max(z/a, c/z);
-        		
+        		t1 = (t1 == -0.0)? 0.0 : t1;
+
+            	//if (debug)
+            		//System.out.println("t1 = " + t1 + ", t2 = " + t2);
+
         		if (t1 > 0 && t1 <= dt) {
+		    		//System.out.println("***********t1 possible " + t1);
+
         			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t1, p.x.getY() + p.v.y * t1);
-        			Vector2d c_pq = new Vector2d(c_p.x - q.v.x, c_p.y - q.v.y);
+        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
         			
         			double alpha = getAlpha(c_pq, rq);
-        			if (alpha <= 1 && getAlpha(c_pq, rq) >= 0) {
+                	if (debug)
+                		System.out.println("alpha = " + alpha);
+        			
+        			if (alpha <= 1 && alpha > 0) {
         		    	if (debug)
-        		    		System.out.println("Collision at " + t1);
+        		    		System.out.println("***********Collision at " + t1);
         				return new PointEdgeCollision(p, q, r, t1, dt, alpha);
         			}
         		} else if (t2 > 0 && t2 <= dt) {
+		    		System.out.println("***********t2 possible " + t2);
+
         			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t2, p.x.getY() + p.v.y * t2);
-        			Vector2d c_pq = new Vector2d(c_p.x - q.v.x, c_p.y - q.v.y);
+        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
         			
         			double alpha = getAlpha(c_pq, rq);
-        			if (alpha <= 1 && getAlpha(c_pq, rq) >= 0) {
+                	if (debug)
+                		System.out.println("alpha = " + alpha);
+        			
+        			if (alpha <= 1 && alpha > 0) {
         		    	if (debug)
-        		    		System.out.println("Collision at " + t2);
+        		    		System.out.println("*************Collision at " + t2);
         				return new PointEdgeCollision(p, q, r, t2, dt, alpha);
         			}
         		}
-        	}    	
+        	} else if (a == 0) { 	
+        		double t = -c/b;
+        		if (t > 0 && t <= dt) {
+
+        			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t, p.x.getY() + p.v.y * t);
+        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
+        			
+        			double alpha = getAlpha(c_pq, rq);
+                	if (debug)
+                		System.out.println("alpha = " + alpha);
+        			
+        			if (alpha <= 1 && alpha >= 0) {
+        		    	if (debug)
+        		    		System.out.println("***********Collision at " + t);
+        				return new PointEdgeCollision(p, q, r, t, dt, alpha);
+        			}
+        		} 
+        	} else if (b == 0) {
+        		double t = c;
+        		if (t > 0 && t <= dt) {
+
+        			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t, p.x.getY() + p.v.y * t);
+        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
+        			
+        			double alpha = getAlpha(c_pq, rq);
+                	if (debug)
+                		System.out.println("alpha = " + alpha);
+        			
+        			if (alpha <= 1 && alpha >= 0) {
+        		    	System.out.println("***********Collision at " + t);
+        				return new PointEdgeCollision(p, q, r, t, dt, alpha);
+        			}
+        		} 
+        	}
             return null; 
         }
     }

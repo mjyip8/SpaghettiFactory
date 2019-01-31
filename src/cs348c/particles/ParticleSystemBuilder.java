@@ -31,7 +31,9 @@ public class ParticleSystemBuilder implements GLEventListener
     private static int N_STEPS_PER_FRAME = 30;
 
     /** Default graphics time step size. */
-    public static final double DT = 0.01/30.;
+    public static final double DT = 0.01;
+    //public static final double DT = .01/20;
+
 
     Color3f bgColor = new Color3f(0,0,0);
 
@@ -121,8 +123,8 @@ public class ParticleSystemBuilder implements GLEventListener
         gl.setSwapInterval(1);
 
         /// SETUP ANTI-ALIASED POINTS AND LINES:
-        gl.glLineWidth(2);  /// YOU MAY WANT TO ADJUST THIS WIDTH
-        gl.glPointSize(3f); /// YOU MAY WANT TO ADJUST THIS SIZE
+        gl.glLineWidth(5);  /// YOU MAY WANT TO ADJUST THIS WIDTH
+        gl.glPointSize(5f); /// YOU MAY WANT TO ADJUST THIS SIZE
         gl.glEnable(gl.GL_POINT_SMOOTH);
         gl.glHint  (gl.GL_POINT_SMOOTH_HINT, gl.GL_NICEST);
         gl.glEnable(gl.GL_LINE_SMOOTH);
