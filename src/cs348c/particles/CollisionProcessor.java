@@ -46,18 +46,30 @@ public class CollisionProcessor
         void resolveCollision()
         {
         	System.out.println("Entering resolveCollision");
-        	Vector2d c_p = new Vector2d(P.x.x + P.v.x * t, P.x.y + P.v.y * t);
-        	Vector2d rq = subVec(R.x, Q.x);
+        	Vector2d c_p = new Vector2d((1 - alpha) * Q.x.x + alpha * R.x.x, (1 - alpha) * Q.x.y + alpha * R.x.y);
+        	Vector2d c_v = new Vector2d((1 - alpha) * Q.v.x + alpha * R.v.x, (1 - alpha) * Q.v.y + alpha * R.v.y);
+        	Vector2d rq = new Vector2d(R.x.x - Q.x.x, R.x.y - Q.x.y);
         	Vector2d n = new Vector2d(rq.y /rq.length(), -rq.x / rq.length());
         	
         	double m = (1/P.m) + (Math.pow(1 - alpha, 2) / Q.m) + (Math.pow(alpha, 2) / R.m);
         	double epsilon = .1;
+        	double n_v = new Vector2d(P.v.x, P.v.y).dot(n);
+        	
+        	
         	Vector2d n_v_old = scalMult(n, -P.v.dot(n));
         	Vector2d gamma = scalMult(n_v_old, (1 + epsilon) * m);
 
-        	P.v = new Vector2d(P.v.x +               (gamma.x * n.x / P.m), P.v.y +               (gamma.y * n.y / P.m));
+        	System.out.println("P old v : (" + P.v.x + ", " + P.v.y + ",");
+        	System.out.println("Q old v : (" + Q.v.x + ", " + Q.v.y + ",");
+        	System.out.println("R old v : (" + R.v.x + ", " + R.v.y + ",");
+        	P.v = new Vector2d(P.v.x +               (gamma.x * -n.x / P.m), P.v.y +               (gamma.y * -n.y / P.m));
         	Q.v = new Vector2d(Q.v.x + ((1 - alpha) * gamma.x * n.x / Q.m), Q.v.y + ((1 - alpha) * gamma.y * n.y / Q.m));
         	R.v = new Vector2d(R.v.x +      (alpha  * gamma.x * n.x / R.m), R.v.y +      (alpha  * gamma.y * n.y / R.m));
+        	System.out.println("P new v : (" + P.v.x + ", " + P.v.y + ",");
+        	System.out.println("Q new v : (" + Q.v.x + ", " + Q.v.y + ",");
+        	System.out.println("R new v : (" + R.v.x + ", " + R.v.y + ",");
+
+
         	System.out.println("Leaving resolveCollision");
         }
 
