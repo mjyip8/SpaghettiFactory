@@ -31,8 +31,7 @@ public class ParticleSystemBuilder implements GLEventListener
     private static int N_STEPS_PER_FRAME = 30;
 
     /** Default graphics time step size. */
-    //public static final double DT = 0.01/30;
-    public static final double DT = 1;
+    public static final double DT = 0.01;
 
 
     Color3f bgColor = new Color3f(0,0,0);
