@@ -1,6 +1,7 @@
 package cs348c.particles;
 
 import java.util.*;
+import java.lang.Object;
 import javax.vecmath.*;
 import com.jogamp.opengl.GL2;
 
@@ -45,39 +46,65 @@ public class CollisionProcessor
         /** Applies momentum-conserving impulses in an attempt to resolve the collision. */
         void resolveCollision()
         {
+        	
         	System.out.println("Entering resolveCollision");
+        	System.out.println("alpha: " + alpha);
+        	System.out.println("P.x: " + P.x);
+        	System.out.println("Q.x: " + Q.x);
+        	System.out.println("R.x: " + R.x);
+        	System.out.println("P.v: " + P.v);
+        	System.out.println("Q.v: " + Q.v);
+        	System.out.println("R.v: " + R.v);  
+        	System.out.println("dt: " + dt);
+        	System.out.println("t: " + t); 
+        	
+        	
+        	
+        	
         	Vector2d rq = new Vector2d(R.x.x - Q.x.x, R.x.y - Q.x.y);
+        	System.out.println("RQ: " + rq);
+        	Vector2d pq = new Vector2d(P.x.x - Q.x.x, P.x.y - Q.x.y);
+        	System.out.println("PQ: " + pq);
+
+
+
+
         	Vector2d n = new Vector2d(-rq.y /rq.length(), rq.x / rq.length());
-        	if (n.dot(P.v) < 0) {
+        	System.out.println("P.v: " + P.v);
+        	if (n.dot(P.v) > 0) {
         		n = scalMult(n, -1);
         	}
         	n.x = (n.x == -0.0)? 0.0 : n.x;
         	n.y = (n.y == -0.0)? 0.0 : n.y;
 
         	System.out.println("n : (" + n.x + ", " + n.y + ")");
-
-        	Vector2d c_v = new Vector2d((1 - alpha) * Q.v.x + alpha * R.v.x, (1 - alpha) * Q.v.y + alpha * R.v.y);
         	
+        	Vector2d c_v = new Vector2d((1 - alpha) * Q.v.x + alpha * R.v.x, (1 - alpha) * Q.v.y + alpha * R.v.y);
+        	Vector2d c_v2;
+        		
+        	Vector2d subVel = new Vector2d(P.v.x - c_v.x, P.v.y - c_v.y);
+        	System.out.println("p - c_v = " + subVel);
         	double vn_minus = new Vector2d(P.v.x - c_v.x, P.v.y - c_v.y).dot(n);
         	
         	double m = 0.0;
         	if (Q.isPinned() && R.isPinned()) {
         		m = P.m;
         	} else if (Q.isPinned()) {
-        		m = 1.0/((1/P.m) + (Math.pow(alpha, 2) / Q.m));
+        		m = 1.0/((1.0/P.m) + (Math.pow(alpha, 2) / R.m));
         	} else if (R.isPinned()) {
-        		m = 1.0/((1/P.m) + (Math.pow(1 - alpha, 2) / R.m));
+        		m = 1.0/((1.0/P.m) + (Math.pow(1 - alpha, 2) / Q.m));
         	} else {
-        		m = 1.0/((1/P.m) + (Math.pow(1 - alpha, 2) / Q.m) + (Math.pow(alpha, 2) / R.m));
+        		m = 1.0/((1.0/P.m) + (Math.pow(1 - alpha, 2) / Q.m) + (Math.pow(alpha, 2) / R.m));
         	}
         	
         	double epsilon = .05;
-        	double gamma = -(1 + epsilon) * m * vn_minus;
+        	double gamma = (1 + epsilon) * m * -vn_minus;
 
         	System.out.println("P old v : (" + P.v.x + ", " + P.v.y + ")");
         	System.out.println("Q old v : (" + Q.v.x + ", " + Q.v.y + ")");
         	System.out.println("R old v : (" + R.v.x + ", " + R.v.y + ")");
-        	P.v = addVec(P.v, scalMult(n,               gamma/P.m));
+
+        	P.v = addVec(P.v, scalMult(n,               gamma * ((P.isPinned())? 0: 1/P.m)));
         	Q.v = subVec(Q.v, scalMult(n, (1 - alpha) * gamma * ((Q.isPinned())? 0: 1/Q.m)));
         	R.v = subVec(R.v, scalMult(n,      alpha  * gamma * ((R.isPinned())? 0: 1/R.m)));
         	System.out.println("P new v : (" + P.v.x + ", " + P.v.y + ")");
@@ -181,13 +208,16 @@ public class CollisionProcessor
         				return new PointEdgeCollision(p, q, r, t1, dt, alpha);
         			}
         		} else if (t2 > 0 && t2 <= dt) {
-		    		System.out.println("***********T2 possible " + t2);
+		    		if (debug)
+	        			System.out.println("***********T2 possible " + t2);
 
         			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t2, p.x.getY() + p.v.y * t2);
         			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
         			
         			double alpha = getAlpha(c_pq, rq);
-                	System.out.println("alpha = " + alpha);
+                	
+        			if (debug)
+        				System.out.println("alpha = " + alpha);
         			
         			if (alpha <= 1 + epsilon && alpha > 0 - epsilon) {
         		    	if (debug)
