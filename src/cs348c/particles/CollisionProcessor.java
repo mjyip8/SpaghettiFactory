@@ -50,14 +50,9 @@ public class CollisionProcessor
         /** Applies momentum-conserving impulses in an attempt to resolve the collision. */
         void resolveCollision()
         {
-        	
         	System.out.println("Entering resolveCollision");        	
-	
-        	Vector2d rq = new Vector2d((R.x.x + t * R.v.x) - (Q.x.x + t * Q.v.x), (R.x.y + t * R.v.y) - (Q.x.y + t * Q.v.y));
-        	Vector2d pq = new Vector2d((P.x.x + t * P.v.x) - (Q.x.x + t * Q.v.x), (P.x.y + t * P.v.x) - (Q.x.y + t * Q.v.y));
         	Vector2d c_v = new Vector2d((1 - alpha) * Q.v.x + alpha * R.v.x, (1 - alpha) * Q.v.y + alpha * R.v.y);
-        	
-        	Vector2d qr = new Vector2d((Q.x.x + t * Q.v.x) - (R.x.x + t * R.v.x), (Q.x.y + t * Q.v.y) - (R.x.y + t * R.v.y));
+			Vector2d qr = newVecAtT(Q, R, t);
         	Vector2d n0 = new Vector2d(qr.y /qr.length(), -qr.x / qr.length());
 
         	Vector2d v = new Vector2d(P.v.x - c_v.x, P.v.y - c_v.y);
@@ -79,32 +74,9 @@ public class CollisionProcessor
         	double epsilon = .01;
         	double gamma = (1 + epsilon) * m * -vn_minus;
 
-        	//if (rq.y == 1.0 || rq.y == -1.0 ) {
-        		System.out.println("                         Vertical edge");   		
-            	System.out.println("alpha: " + alpha);
-            	System.out.println("P.x: " + P.x);
-            	System.out.println("Q.x: " + Q.x);
-            	System.out.println("R.x: " + R.x); 
-            	System.out.println("dt: " + dt);
-            	System.out.println("t: " + t);
-            	System.out.println("n0 : (" + n0.x + ", " + n0.y + ")");
-            	System.out.println("vn_minus: " + vn_minus);
-            	System.out.println("m: " + m);
-            	System.out.println("gamma: " + gamma);
-            	System.out.println("v : (" + v.x + ", " + v.y + ")");
-            	System.out.println("P old v : (" + P.v.x + ", " + P.v.y + ")");
-            	System.out.println("Q old v : (" + Q.v.x + ", " + Q.v.y + ")");
-            	System.out.println("R old v : (" + R.v.x + ", " + R.v.y + ")");
-        	//}
-
         	P.v = addVec(P.v, scalMult(n,               gamma * getW(P)));
         	Q.v = subVec(Q.v, scalMult(n, (1 - alpha) * gamma * getW(Q)));
         	R.v = subVec(R.v, scalMult(n,      alpha  * gamma * getW(R)));
-        	//if (rq.y == 1.0 || rq.y == -1.0 ) {
-            	System.out.println("P new v : (" + P.v.x + ", " + P.v.y + ")");
-            	System.out.println("Q new v : (" + Q.v.x + ", " + Q.v.y + ")");
-            	System.out.println("R new v : (" + R.v.x + ", " + R.v.y + ")");
-        	//}
 
         	System.out.println("Leaving resolveCollision");
         }
@@ -153,6 +125,9 @@ public class CollisionProcessor
     	return (rq.x * pq.x + rq.y * pq.y)/rq.lengthSquared();
     }
 
+    private static Vector2d newVecAtT(Particle p, Particle q, double t) {
+    	return new Vector2d((p.x.x + p.v.x * t) - (q.x.x + q.v.x * t), (p.x.y + p.v.y * t) - (q.x.y + q.v.y * t));
+    }
 
     /**
      * Checks for collision between Particle p, and the edge (q,r) on
@@ -196,8 +171,6 @@ public class CollisionProcessor
         		double z = -.5 * (b + Math.signum(b) * Math.sqrt(Math.pow(b, 2) - (4 * a * c)));
         		double t1 = Math.min(z/a, c/z);
         		double t2 = Math.max(z/a, c/z);
-        		//t1 = (t1 == -0.0)? 0.0 : t1;
-        		//t2 = (t2 == -0.0)? 0.0 : t2;
 
             	if (debug)
             		System.out.println("t1 = " + t1 + ", t2 = " + t2);
@@ -209,11 +182,10 @@ public class CollisionProcessor
         		if (t1 > 0 && t1 <= dt) {
         			if (debug)
         				System.out.println("***********T1 possible " + t1);
+        			Vector2d c_pq = newVecAtT(p, q, t1);
+        			Vector2d c_rq = newVecAtT(r, q, t1);
 
-        			Vector2d c_p = new Vector2d(p.x.x + p.v.x * t1, p.x.y + p.v.y * t1);
-        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
-        			
-        			double alpha = getAlpha(c_pq, rq);
+        			double alpha = getAlpha(c_pq, c_rq);
                 	if (debug)
                 		System.out.println("alpha = " + alpha);
         			
@@ -225,11 +197,11 @@ public class CollisionProcessor
         		} else if (t2 > 0 && t2 <= dt) {
 		    		if (debug)
 	        			System.out.println("***********T2 possible " + t2);
-
-        			Vector2d c_p = new Vector2d(p.x.getX() + p.v.x * t2, p.x.getY() + p.v.y * t2);
-        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
+		    		
+        			Vector2d c_pq = newVecAtT(p, q, t2);
+        			Vector2d c_rq = newVecAtT(r, q, t2);
         			
-        			double alpha = getAlpha(c_pq, rq);
+        			double alpha = getAlpha(c_pq, c_rq);
                 	
         			if (debug)
         				System.out.println("alpha = " + alpha);
@@ -248,11 +220,11 @@ public class CollisionProcessor
             	}
         		
         		if (t > 0 && t <= dt) {
-
-        			Vector2d c_p = new Vector2d(p.x.x + p.v.x * t, p.x.x + p.v.y * t);
-        			Vector2d c_pq = new Vector2d(c_p.x - q.x.x, c_p.y - q.x.y);
+        			Vector2d c_pq = newVecAtT(p, q, t);
+        			Vector2d c_rq = newVecAtT(r, q, t);
         			
-        			double alpha = getAlpha(c_pq, rq);
+        			double alpha = getAlpha(c_pq, c_rq);
+        			
                 	if (debug)
                 		System.out.println("alpha = " + alpha);
         			
