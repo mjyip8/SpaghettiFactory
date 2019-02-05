@@ -53,11 +53,34 @@ public class SpringForceParticleEdgeContact implements Force
     public void applyForce()
     {
         if(p0.isPinned() && e1.isPinned() && e2.isPinned()) return;/// no force
-
-        /// OTHERWISE COMPUTE PROXIMITY AND ANY FORCE: 
-        /// 
-        /// <INSERT YOUR IMPLEMENTATION HERE>
-        /// .... ;)    
+        
+        //calculating projection point where spring is attached
+        Vector2d pe = subVec(p0.x, e1.x);
+        Vector2d e = subVec(e2.x, e1.x);
+	    e.normalize();
+	    double t = pe.dot(e);
+	    Vector2d c_p = addVec(e1.x, scalMult(e, t));
+	    Vector2d c_v = new Vector2d((e2.v.x * t) + e1.v.x * (1 - t), (e2.v.y * t) + e1.v.y * (1 - t));
+	    
+	    //REST LENGTH
+	    Vector2d v = subVec(c_p, p0.x0);
+	    double L0 = v.length();
+	    
+	    //CURRENT LENGTH
+	    Vector2d c = subVec(c_p, p0.x);
+	    double L = c.length();
+	    
+	    c.normalize();
+	    
+	    double dvDot = c.dot(c_v) - c.dot(p0.v);
+	    
+	    double ks = Constants.PENALTY_STIFFNESS;
+	    double kd = Constants.PENALTY_DAMPING;
+	    c.scale(ks * ((L - L0) + kd * dvDot));
+	    p0.f.add(c);
+	    c.negate();
+	    e2.f.add(scalMult(c, t));
+	    e1.f.add(scalMult(c, 1 - t));
     }
 
     public void display(GL2 gl) {}
@@ -66,5 +89,53 @@ public class SpringForceParticleEdgeContact implements Force
 
     public boolean contains(Particle p)  {
         return ((p==p0) || (p==e1) || (p==e2));
+    }
+    
+    private static Vector2d subVec(Point2d a, Point2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d subVec(Vector2d a, Point2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d subVec(Point2d a, Vector2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d addVec(Point2d a, Vector2d b) {
+    	return new Vector2d(a.x + b.x, a.y + b.y);
+    }
+    
+    private static Vector2d scalMult(Vector2d v, double n) {
+    	return new Vector2d(v.x * n, v.y * n);
+    } 
+    
+    
+    private static double getAlpha(Vector2d pq, Vector2d rq) {
+    	return (rq.x * pq.x + rq.y * pq.y)/rq.lengthSquared();
+    }
+    
+    public static SpringForceParticleEdgeContact isWithinH(Particle p, Particle q, Particle r, ParticleSystem ps) {
+        if(p == q || p==r) 
+            return null;
+        else {
+        	Vector2d pq   = subVec(p.x, q.x);
+        	Vector2d rq   = subVec(r.x, q.x);        	
+        	
+        	double alpha = getAlpha(pq, rq);
+        	if (alpha < 0) { //near Q
+        		return (pq.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
+        	} else if (alpha > 1) {
+        		Vector2d pr = subVec(p.x, r.x);
+        		return (pr.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
+        	} else {
+        	    Vector2d d = scalMult(rq, 1/ rq.length());
+        	    double t = pq.dot(d);
+        	    Vector2d P = addVec(q.x, scalMult(d, t));
+        	    Vector2d n = subVec(p.x, P);
+        		return (n.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
+        	}
+        }
     }
 }

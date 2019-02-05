@@ -18,4 +18,9 @@ public interface Constants
 
     /** Spring bending stiffness. */
     public static final double STIFFNESS_BEND    = 4.; 
+    
+    public static final double PENALTY_STIFFNESS = 14;
+    
+    public static final double PENALTY_DAMPING = .1;
+
 }

@@ -224,19 +224,20 @@ public class ParticleSystem implements Serializable
         /// PENALTY FORCES (LAST!):
     	//test for collisions here!
         /// TODO: APPLY PENALTY FORCES BETWEEN ALL RELEVANT PARTICLE-EDGE PAIRS
-        /*{
+        {
         	for(Particle p : P) {
         		for (Force f: F) {	
         			if (f instanceof SpringForce2Particle) { //check if is spaghetti edge
         				// check is within .01
-        				Point2d contact_pt = cs348c.particles.CollisionProcessor.isWithinH(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2);
-            			if (contact_pt != null) {
-            				addForce(new SpringForce1Particle(p, contact_pt, this));
+        				SpringForceParticleEdgeContact penalty_force = cs348c.particles.SpringForceParticleEdgeContact.isWithinH(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2, this);
+            			if (penalty_force != null) {
+            				penalty_force.setDT(dt);
+            				penalty_force.applyForce();
             			}        				
         			}
         		}
         	}
-        }*/
+        }
 
         ///////////////////////////////////////////////
         /// SYMPLECTIC-EULER TIME-STEP w/ COLLISIONS:

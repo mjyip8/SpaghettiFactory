@@ -148,26 +148,18 @@ public class CollisionProcessor
         	Vector2d pq_v = subVec(p.v, q.v);
         	Vector2d rq   = subVec(r.x, q.x);
         	Vector2d rq_v = subVec(r.v, q.v);
-   	
-        	if (rq.y == 1.0 || rq.y == -1.0 ) {
-        		System.out.println("Vertical edge in testPointEdgeCollision");   		
-        	}
-        	
+     	
         	double c = cp(rq, pq);
         	double b = cp(rq_v, pq) + cp(rq, pq_v);
         	double a = cp(rq_v, pq_v);
-        	
-        	if (rq.y == 1.0 || rq.y == -1.0 ) {
-        		System.out.println("a = " + a + "; b = " + b + "; c =  " + c);   		
-        	}
-        	
+        	    	
         	double epsilon = 0.00000001;
         	        		
-        	if ((Math.abs(a) <= epsilon && Math.abs(b) <= epsilon) || ((b * b) - (4 * a * c) < 0 - epsilon)) {
+        	if ((Math.abs(a) <= epsilon && Math.abs(b) <= epsilon) || ((b * b) - (4 * a * c) < 0)) {
             	if (debug)
             		System.out.println("returning null");
         		return null;
-        	} else if (b * b - 4 * a * c >= 0 - epsilon && Math.abs(a) > epsilon) {
+        	} else if (b * b - 4 * a * c >= 0 && Math.abs(a) > epsilon) {
         		double z = -.5 * (b + Math.signum(b) * Math.sqrt(Math.pow(b, 2) - (4 * a * c)));
         		double t1 = Math.min(z/a, c/z);
         		double t2 = Math.max(z/a, c/z);
@@ -215,10 +207,6 @@ public class CollisionProcessor
         	} else if (Math.abs(a) <= epsilon) { 	
         		double t = -c/b;
         		
-            	if (rq.y == 1.0 || rq.y == -1.0 ) {
-            		System.out.println("time = " + t);   		
-            	}
-        		
         		if (t > 0 && t <= dt) {
         			Vector2d c_pq = newVecAtT(p, q, t);
         			Vector2d c_rq = newVecAtT(r, q, t);
@@ -242,31 +230,6 @@ public class CollisionProcessor
         }
     }
     
-    private static Point2d Vec2Pt(Vector2d old) {
-    	return new Point2d(old.x, old.y);
-    }
-    
-    public static Point2d isWithinH(Particle p, Particle q, Particle r) {
-        if(p == q || p==r) 
-            return null;
-        else {
-        	Vector2d pq   = subVec(p.x, q.x);
-        	Vector2d rq   = subVec(r.x, q.x);        	
-        	
-        	double alpha = getAlpha(pq, rq);
-        	if (alpha < 0) { //near Q
-        		return (pq.length() <= 0.01)? q.x : null;
-        	} else if (alpha > 1) {
-        		Vector2d pr = subVec(p.x, r.x);
-        		return (pr.length() <= .01)? r.x : null;
-        	} else {
-        	    Vector2d d = scalMult(rq, 1/ rq.length());
-        	    double t = pq.dot(d);
-        	    Vector2d P = addVec(q.x, scalMult(d, t));
-        	    Vector2d n = subVec(p.x, P);
-        		return (n.length() <= 0.01)? Vec2Pt(P): null;
-        	}
-        }
-    }
+ 
     
 }
