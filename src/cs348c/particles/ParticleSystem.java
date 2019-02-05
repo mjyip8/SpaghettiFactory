@@ -262,12 +262,6 @@ public class ParticleSystem implements Serializable
         /// 2. RESOLVE REMAINING COLLISIONS USING IMPULSES
         //////////////////////////////////////////////////
         {
-        	//create pointedgecollision
-        	//call test point edge collision
-        	//as soon as you find collision handle it
-        	//consider quadTree for extension??
-        	
-        	//iterate through every spring and point pair
         	double collisionsFound = 1;
 
 	        while (collisionsFound > 0) {
@@ -279,7 +273,6 @@ public class ParticleSystem implements Serializable
 	        				if (collision != null) {
 	        					collision.resolveCollision();
 	        					collisionsFound++;
-	        					System.out.println("Collisions found = " + collisionsFound);
 	        				} 
 	        			}
     				}

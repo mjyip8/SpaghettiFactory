@@ -122,8 +122,8 @@ public class ParticleSystemBuilder implements GLEventListener
         gl.setSwapInterval(1);
 
         /// SETUP ANTI-ALIASED POINTS AND LINES:
-        gl.glLineWidth(5);  /// YOU MAY WANT TO ADJUST THIS WIDTH
-        gl.glPointSize(5f); /// YOU MAY WANT TO ADJUST THIS SIZE
+        gl.glLineWidth(3);  /// YOU MAY WANT TO ADJUST THIS WIDTH
+        gl.glPointSize(3f); /// YOU MAY WANT TO ADJUST THIS SIZE
         gl.glEnable(gl.GL_POINT_SMOOTH);
         gl.glHint  (gl.GL_POINT_SMOOTH_HINT, gl.GL_NICEST);
         gl.glEnable(gl.GL_LINE_SMOOTH);

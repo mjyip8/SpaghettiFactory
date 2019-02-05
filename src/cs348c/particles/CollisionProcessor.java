@@ -50,18 +50,13 @@ public class CollisionProcessor
         /** Applies momentum-conserving impulses in an attempt to resolve the collision. */
         void resolveCollision()
         {
-        	System.out.println("Entering resolveCollision");        	
         	Vector2d c_v = new Vector2d((1 - alpha) * Q.v.x + alpha * R.v.x, (1 - alpha) * Q.v.y + alpha * R.v.y);
 			Vector2d qr = newVecAtT(Q, R, t);
         	Vector2d n0 = new Vector2d(qr.y /qr.length(), -qr.x / qr.length());
 
         	Vector2d v = new Vector2d(P.v.x - c_v.x, P.v.y - c_v.y);
-
         	
-        	Vector2d n = scalMult(n0, Math.signum(scalMult(v, -1).dot(n0)));
-
-        	System.out.println("n : (" + n.x + ", " + n.y + ")");
-        	        	
+        	Vector2d n = scalMult(n0, Math.signum(scalMult(v, -1).dot(n0)));        	        	
         	double vn_minus = v.dot(n);
         	
         	double totalW = getW(P) + (Math.pow(1 - alpha, 2) * getW(Q)) + ((Math.pow(alpha, 2)) * getW(R));
@@ -77,8 +72,6 @@ public class CollisionProcessor
         	P.v = addVec(P.v, scalMult(n,               gamma * getW(P)));
         	Q.v = subVec(Q.v, scalMult(n, (1 - alpha) * gamma * getW(Q)));
         	R.v = subVec(R.v, scalMult(n,      alpha  * gamma * getW(R)));
-
-        	System.out.println("Leaving resolveCollision");
         }
 
         /** 
@@ -94,15 +87,7 @@ public class CollisionProcessor
     	return new Vector2d(a.x - b.x, a.y - b.y);
     }
     
-    private static Vector2d subVec(Point2d a, Vector2d b) {
-    	return new Vector2d(a.x - b.x, a.y - b.y);
-    }
-    
     private static Vector2d addVec(Vector2d a, Vector2d b) {
-    	return new Vector2d(a.x + b.x, a.y + b.y);
-    }
-    
-    private static Vector2d addVec(Point2d a, Vector2d b) {
     	return new Vector2d(a.x + b.x, a.y + b.y);
     }
     
@@ -221,9 +206,6 @@ public class CollisionProcessor
         		    		System.out.println("***********Collision at " + t);
         				return new PointEdgeCollision(p, q, r, t, dt, alpha);
         			}
-                	if (rq.y == 1.0 || rq.y == -1.0 ) {
-                		System.out.println("alpha = " + alpha);   		
-                	}
         		} 
         	} 
             return null; 
