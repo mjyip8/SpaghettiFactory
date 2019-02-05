@@ -168,7 +168,32 @@ public class ParticleSystem implements Serializable
         return false;
     }
     
+    private static Vector2d subVec(Point2d a, Point2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static Vector2d addVec(Vector2d a, Vector2d b) {
+    	return new Vector2d(a.x + b.x, a.y + b.y);
+    }
+    
+    private static Vector2d scalMult(Vector2d v, double n) {
+    	return new Vector2d(v.x * n, v.y * n);
+    }
+    
+    private static Vector2d subVec(Vector2d a, Vector2d b) {
+    	return new Vector2d(a.x - b.x, a.y - b.y);
+    }
+    
+    private static double cp(Vector2d v1, Vector2d v2) 
+    {
+        double cp = (v1.x * v2.y) - (v1.y * v2.x);
+        return (cp == -0.0)? 0.0 : cp;
+    }
        
+    private boolean isWithinH() {
+    	return false;
+    }
+    
     /**
      * MAIN FUNCTION TO IMPLEMENT YOUR ROBUST COLLISION PROCESSING ALGORITHM.
      */
@@ -187,18 +212,31 @@ public class ParticleSystem implements Serializable
                 force.applyForce();
 
              // GRAVITY:
-             for(Particle p : P)   p.f.y -= p.m * .1f;
+             for(Particle p : P)   p.f.y -= p.m * 5.f;
 
             // ADD SOME MASS-PROPORTIONAL DAMPING (DEFAULT IS ZERO)
             for(Particle p : P) 
                 Utils.acc(p.f,  -Constants.DAMPING_MASS * p.m, p.v);
         }
 
+        
+        
         /// PENALTY FORCES (LAST!):
-        {
-        	//test for collisions here!
-            /// TODO: APPLY PENALTY FORCES BETWEEN ALL RELEVANT PARTICLE-EDGE PAIRS
-        }
+    	//test for collisions here!
+        /// TODO: APPLY PENALTY FORCES BETWEEN ALL RELEVANT PARTICLE-EDGE PAIRS
+        /*{
+        	for(Particle p : P) {
+        		for (Force f: F) {	
+        			if (f instanceof SpringForce2Particle) { //check if is spaghetti edge
+        				// check is within .01
+        				Point2d contact_pt = cs348c.particles.CollisionProcessor.isWithinH(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2);
+            			if (contact_pt != null) {
+            				addForce(new SpringForce1Particle(p, contact_pt, this));
+            			}        				
+        			}
+        		}
+        	}
+        }*/
 
         ///////////////////////////////////////////////
         /// SYMPLECTIC-EULER TIME-STEP w/ COLLISIONS:
@@ -230,20 +268,22 @@ public class ParticleSystem implements Serializable
         	
         	//iterate through every spring and point pair
         	double collisionsFound = 1;
-        	//while (collisionsFound > 0) {
-        		collisionsFound = 0;
-	        	for(Particle p : P) {
-	        		for (Force f: F) {	
-	        			if (f instanceof SpringForce2Particle) { //check if is spaghetti edge
-	        				PointEdgeCollision collision = cs348c.particles.CollisionProcessor.testPointEdgeCollision(p, ((SpringForce2Particle) f).p1, ((SpringForce2Particle) f).p2, dt, true);
+
+	        while (collisionsFound > 0) {
+	        	collisionsFound = 0;
+        		for (Particle p : P) {
+    				for (Force f1 : F) {
+	        			if (f1 instanceof SpringForce2Particle) { 
+	        				PointEdgeCollision collision = cs348c.particles.CollisionProcessor.testPointEdgeCollision(p, ((SpringForce2Particle) f1).p1, ((SpringForce2Particle) f1).p2, dt, false);
 	        				if (collision != null) {
 	        					collision.resolveCollision();
 	        					collisionsFound++;
+	        					System.out.println("Collisions found = " + collisionsFound);
 	        				} 
 	        			}
-	        		}
-	        	}
-        	//} 	        
+    				}
+        		}
+	        }
         }
 
         //////////////////////////////////////////////////////////
