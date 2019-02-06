@@ -17,10 +17,10 @@ public interface Constants
     public static final double STIFFNESS_STRETCH = 10000.0; 
 
     /** Spring bending stiffness. */
-    public static final double STIFFNESS_BEND    = 4.; 
+    public static final double STIFFNESS_BEND    = 6.; 
     
-    public static final double PENALTY_STIFFNESS = 140;
+    public static final double PENALTY_STIFFNESS = 15;
     
-    public static final double PENALTY_DAMPING = 0.8;
+    public static final double PENALTY_DAMPING = 10;
 
 }
