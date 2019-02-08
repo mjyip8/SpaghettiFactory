@@ -226,7 +226,7 @@ public class ParticleSystem implements Serializable
         /// TODO: APPLY PENALTY FORCES BETWEEN ALL RELEVANT PARTICLE-EDGE PAIRS
         {
         	for(Particle p : P) {
-        		p.v = scalMult(p.v, .9999);
+        		//p.v = scalMult(p.v, .9999);
         		for (Force f: F) {	
         			if (f instanceof SpringForce2Particle) { //check if is spaghetti edge
         				// check is within .01

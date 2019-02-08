@@ -13,7 +13,7 @@ import com.jogamp.opengl.*;
  */
 public class SpringForceParticleEdgeContact implements Force
 {
-    static final double H  = 0.01;// thickness
+    static final double H  = 0.0075;// thickness
     static final double H2 = H*H;
 
     private Particle p0;
