@@ -1,4 +1,4 @@
-#Spaghetti Factory: 1D cloth
+# Spaghetti Factory: 1D cloth
 Implemented robust collision processing as described in the [2011 Bridson paper](https://www.cs.ubc.ca/~rbridson/docs/cloth2002.pdf). 
 - Used continuous point-edge collision detection to determine when and where to apply impulses between point and edges. 
 - Applied impulses to resolve collisions
@@ -6,5 +6,5 @@ Implemented robust collision processing as described in the [2011 Bridson paper]
 - Applied penalty forces at a distance of 0.01 
 - Implemented friction
 
-##Additional Comments
+## Additional Comments
 My most successful attempt is far from realistic. The spaghetti is a little bouncy.
