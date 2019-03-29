@@ -7,4 +7,4 @@ Implemented robust collision processing as described in the [2011 Bridson paper]
 - Implemented friction
 
 ## Additional Comments
-My most successful attempt is far from realistic. The spaghetti is a little bouncy.
+My most successful attempt is far from realistic. The spaghetti is a little bouncy. The simulation also would be more efficient with some sort of acceleration structure (QuadTree?).
