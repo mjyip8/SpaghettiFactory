@@ -337,7 +337,7 @@ public class ParticleSystemBuilder implements GLEventListener
                     resetToRest();
                     PS = new ParticleSystem();
                     spaghettiFactory = new SpaghettiFactory(PS);/// Mmmm...
-                    meatballFactory  = new MeatballFactory(PS); 
+                    //meatballFactory  = new MeatballFactory(PS); 
                     simulate = true;
                 }
 //                 else if(cmd.equals("Rigid Constraint")){

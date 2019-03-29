@@ -14,13 +14,13 @@ public interface Constants
     public static final double PARTICLE_MASS     = 1.0;
 
     /** Spring stretching stiffness. */
-    public static final double STIFFNESS_STRETCH = 10100.0; 
+    public static final double STIFFNESS_STRETCH = 3000.0; 
 
     /** Spring bending stiffness. */
-    public static final double STIFFNESS_BEND    = 5.; 
+    public static final double STIFFNESS_BEND    = 3.; 
     
-    public static final double PENALTY_STIFFNESS = 60;
+    public static final double PENALTY_STIFFNESS = 30;
     
-    public static final double PENALTY_DAMPING = 12;
+    public static final double PENALTY_DAMPING = 10;
 
 }

@@ -19,7 +19,7 @@ import java.awt.Font;
  */
 public class SpaghettiFactory
 {
-    private static final int N_PARTICLES_PER_STRAND = 13;/// LUCKY LUCKY ;)
+    private static final int N_PARTICLES_PER_STRAND = 100;/// LUCKY LUCKY ;)
 
     private static final Point2d INLET = new Point2d(0.999, 0.9975);
 

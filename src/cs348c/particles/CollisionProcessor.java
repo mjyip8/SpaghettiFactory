@@ -69,26 +69,26 @@ public class CollisionProcessor
         	double epsilon = .01;
         	double gamma = (1 + epsilon) * m * -vn_minus;
 
-                //apply the friction vector
-                //did not use friction in my best spaghetti run
-                double mu = .3;
-                Vector2d v_n_pre = scalMult(n, t);
-                double delta_v_n =  - v_n_pre.length();
+            //apply the friction vector
+            //did not use friction in my best spaghetti run
+            double mu = .3;
+            Vector2d v_n_pre = scalMult(n, t);
+            double delta_v_n =  - v_n_pre.length();
 
-                P.v = addVec(P.v, scalMult(n,               gamma * getW(P)));
-                Q.v = subVec(Q.v, scalMult(n, (1 - alpha) * gamma * getW(Q)));
-                R.v = subVec(R.v, scalMult(n,      alpha  * gamma * getW(R)));
+            P.v = addVec(P.v, scalMult(n,               gamma * getW(P)));
+            Q.v = subVec(Q.v, scalMult(n, (1 - alpha) * gamma * getW(Q)));
+            R.v = subVec(R.v, scalMult(n,      alpha  * gamma * getW(R)));
 
-                if (!P.isPinned()) {
-                    delta_v_n += scalMult(n, P.v.dot(n)).length();
+            if (!P.isPinned()) {
+                delta_v_n += scalMult(n, P.v.dot(n)).length();
 
-                    Vector2d tan = scalMult(qr, 1/qr.length());
-                    double tt = P.v.dot(tan);
-                    Vector2d v_tan_pre = scalMult(tan, tt);
+                Vector2d tan = scalMult(qr, 1/qr.length());
+                double tt = P.v.dot(tan);
+                Vector2d v_tan_pre = scalMult(tan, tt);
 
-                    double friction = Math.min(mu * delta_v_n / v_tan_pre.length(), 1);
-                    P.v = addVec(P.v, scalMult(v_tan_pre, -friction));
-                }
+                double friction = Math.min(mu * delta_v_n / v_tan_pre.length(), 1);
+                P.v = addVec(P.v, scalMult(v_tan_pre, -friction));
+            }
         }
 
         /** 
