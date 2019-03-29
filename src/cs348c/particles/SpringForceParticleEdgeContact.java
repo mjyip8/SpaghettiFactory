@@ -124,17 +124,14 @@ public class SpringForceParticleEdgeContact implements Force
         	Vector2d rq   = subVec(r.x, q.x);        	
         	
         	double alpha = getAlpha(pq, rq);
-        	if (alpha < 0) { //near Q
-        		return (pq.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
-        	} else if (alpha > 1) {
-        		Vector2d pr = subVec(p.x, r.x);
-        		return (pr.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
-        	} else {
+            if (alpha > 0 && alpha < 1) {
         	    Vector2d d = scalMult(rq, 1/ rq.length());
         	    double t = pq.dot(d);
         	    Vector2d P = addVec(q.x, scalMult(d, t));
         	    Vector2d n = subVec(p.x, P);
         		return (n.length() <= H) ? new SpringForceParticleEdgeContact(p, q, r, ps) : null;        		
+        	} else {
+        		return null;
         	}
         }
     }
