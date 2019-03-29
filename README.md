@@ -6,8 +6,8 @@ Implemented robust collision processing as described in the [2011 Bridson paper]
 - Applied penalty forces at a distance of 0.01 
 - Implemented friction
 
-![alt text](https://raw.githubusercontent.com/mjyip8/Snow/master/artifacts/long_spaghetti.gif)
-![alt text](https://raw.githubusercontent.com/mjyip8/Snow/master/artifacts/spaghetti.gif)
+![alt text](https://raw.githubusercontent.com/mjyip8/SpaghettiFactory/master/artifacts/long_spaghetti.gif)
+![alt text](https://raw.githubusercontent.com/mjyip8/SpaghettiFactory/master/artifacts/spaghetti.gif)
 
 
 ## Additional Comments
